@@ -64,11 +64,16 @@ export default {
 				},
 				snake: {
 					head: '#00796B',
+					'head-dark': '#00897B',
 					body: '#26A69A',
+					'body-dark': '#4DB6AC',
 					food: '#FF5722',
+					'food-dark': '#FF7043',
 					grid: 'rgba(226, 232, 240, 0.1)',
 					background: '#FAFAFA',
-					border: '#455A64'
+					'background-dark': '#1A1F2C',
+					border: '#455A64',
+					'border-dark': '#263238'
 				}
 			},
 			borderRadius: {

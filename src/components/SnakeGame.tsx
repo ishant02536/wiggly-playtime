@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import GameControls from "./GameControls";
 import ScoreBoard from "./ScoreBoard";
@@ -18,7 +19,6 @@ const GRID_SIZE = 20;
 const INITIAL_SPEED = 150;
 const MAX_SPEED = 80;
 const SPEED_INCREMENT = 5;
-const SWIPE_THRESHOLD = 50; // Minimum distance for a swipe to be detected
 
 const SnakeGame: React.FC = () => {
   const [snake, setSnake] = useState<Cell[]>([{ x: 10, y: 10 }]);
@@ -36,23 +36,25 @@ const SnakeGame: React.FC = () => {
   const directionRef = useRef<Direction>(direction);
   const isMobile = useIsMobile();
   const gameContainerRef = useRef<HTMLDivElement>(null);
-  
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
+  // Update direction ref when direction changes
   useEffect(() => {
     directionRef.current = direction;
   }, [direction]);
 
+  // Load high score from localStorage on component mount
   useEffect(() => {
     const savedHighScore = localStorage.getItem("snakeHighScore");
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore, 10));
     }
     
+    // Check system preference for dark mode
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setIsDarkMode(prefersDark);
     document.documentElement.classList.toggle('dark', prefersDark);
     
+    // Set grid size based on screen size
     const updateGridSize = () => {
       if (gameContainerRef.current) {
         const width = Math.min(window.innerWidth, 500);
@@ -66,12 +68,14 @@ const SnakeGame: React.FC = () => {
     return () => window.removeEventListener("resize", updateGridSize);
   }, []);
 
+  // Generate random food position that is not on the snake
   const generateFood = useCallback((): Cell => {
     const newFood: Cell = {
       x: Math.floor(Math.random() * gridSize),
       y: Math.floor(Math.random() * gridSize),
     };
 
+    // Check if food is on the snake
     const isOnSnake = snake.some(segment => 
       segment.x === newFood.x && segment.y === newFood.y
     );
@@ -83,6 +87,7 @@ const SnakeGame: React.FC = () => {
     return newFood;
   }, [snake, gridSize]);
 
+  // Handle keyboard inputs
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (gameOver) return;
 
@@ -108,6 +113,7 @@ const SnakeGame: React.FC = () => {
         }
         break;
       case " ":
+        // Space to pause/resume
         setIsPaused(prev => !prev);
         break;
       default:
@@ -115,15 +121,18 @@ const SnakeGame: React.FC = () => {
     }
   }, [gameOver]);
 
+  // Toggle dark mode
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
     document.documentElement.classList.toggle('dark', newMode);
   };
 
+  // Control handler for mobile
   const handleControl = (newDirection: Direction) => {
     if (gameOver) return;
     
+    // Prevent moving in the opposite direction
     if (
       (newDirection === "UP" && directionRef.current !== "DOWN") ||
       (newDirection === "DOWN" && directionRef.current !== "UP") ||
@@ -132,18 +141,21 @@ const SnakeGame: React.FC = () => {
     ) {
       setDirection(newDirection);
       
+      // Start the game if it's not started yet
       if (!isGameStarted) {
         setIsGameStarted(true);
       }
     }
   };
 
+  // Move the snake
   const moveSnake = useCallback(() => {
     if (isPaused || gameOver || !isGameStarted) return;
     
     setSnake(prevSnake => {
       const head = { ...prevSnake[0] };
       
+      // Calculate new head position
       switch (directionRef.current) {
         case "UP":
           head.y = head.y - 1;
@@ -161,6 +173,7 @@ const SnakeGame: React.FC = () => {
           break;
       }
       
+      // Check if snake hit the border (game over)
       if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize) {
         setGameOver(true);
         toast.error("Game Over! Snake hit the border.", {
@@ -170,6 +183,7 @@ const SnakeGame: React.FC = () => {
         return prevSnake;
       }
       
+      // Check if snake hit itself
       for (let i = 1; i < prevSnake.length; i++) {
         if (prevSnake[i].x === head.x && prevSnake[i].y === head.y) {
           setGameOver(true);
@@ -183,26 +197,32 @@ const SnakeGame: React.FC = () => {
       
       const newSnake = [head, ...prevSnake];
       
+      // Check if snake ate food
       if (head.x === food.x && head.y === food.y) {
         const newScore = score + 1;
         setScore(newScore);
         
+        // Update high score if needed
         if (newScore > highScore) {
           setHighScore(newScore);
           localStorage.setItem("snakeHighScore", newScore.toString());
         }
         
+        // Generate new food
         setFood(generateFood());
         
+        // Increase speed
         if (speed > MAX_SPEED) {
           setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
         }
         
+        // Show score animation
         toast.success(`Score: ${newScore}`, {
           position: "top-center",
           duration: 1000,
         });
       } else {
+        // Remove the tail if the snake didn't eat food
         newSnake.pop();
       }
       
@@ -210,16 +230,19 @@ const SnakeGame: React.FC = () => {
     });
   }, [isPaused, gameOver, isGameStarted, gridSize, food, score, highScore, speed, generateFood]);
 
+  // Game loop
   useEffect(() => {
     const intervalId = setInterval(moveSnake, speed);
     return () => clearInterval(intervalId);
   }, [moveSnake, speed]);
 
+  // Set up keyboard event listeners
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // Reset the game
   const resetGame = () => {
     setSnake([{ x: Math.floor(gridSize / 2), y: Math.floor(gridSize / 2) }]);
     setFood(generateFood());
@@ -240,6 +263,7 @@ const SnakeGame: React.FC = () => {
     }
   };
 
+  // Calculate the appropriate cell size based on grid size
   const cellSize = Math.min(
     Math.floor(
       Math.min(
@@ -293,17 +317,17 @@ const SnakeGame: React.FC = () => {
           gridTemplateRows: `repeat(${gridSize}, ${cellSize}px)`,
           borderColor: isDarkMode ? 'var(--snake-border-color-dark, #263238)' : 'var(--snake-border-color, #455A64)'
         }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchMove={handleTouchMove}
       >
+        {/* Grid background */}
         {Array.from({ length: gridSize * gridSize }).map((_, index) => {
           const x = index % gridSize;
           const y = Math.floor(index / gridSize);
           
+          // Check if this cell is part of the snake
           const isSnakeHead = snake.length > 0 && snake[0].x === x && snake[0].y === y;
           const isSnakeBody = !isSnakeHead && snake.some((segment, idx) => idx > 0 && segment.x === x && segment.y === y);
           
+          // Check if this cell is the food
           const isFood = food.x === x && food.y === y;
           
           return (
@@ -382,12 +406,6 @@ const SnakeGame: React.FC = () => {
           isPaused={isPaused}
           gameOver={gameOver}
         />
-      )}
-      
-      {isMobile && isGameStarted && !gameOver && !isPaused && (
-        <div className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400 animate-fade-in">
-          <p>Swipe to control the snake</p>
-        </div>
       )}
     </div>
   );

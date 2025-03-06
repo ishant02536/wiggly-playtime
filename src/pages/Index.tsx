@@ -18,7 +18,7 @@ const Index = () => {
             Snake
           </h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Use arrow keys, control buttons, or swipe gestures to navigate the snake and eat the food.
+            Use arrow keys or control buttons to navigate the snake and eat the food.
           </p>
         </div>
         

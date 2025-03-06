@@ -15,6 +15,12 @@ interface GameControlsProps {
 const GameControls: React.FC<GameControlsProps> = ({ onControl, onPause, onReset, isPaused, gameOver }) => {
   return (
     <div className="w-full max-w-xs mt-6">
+      <div className="text-center mb-2">
+        <p className="text-xs text-gray-500 dark:text-gray-400 animate-pulse-gentle">
+          Swipe or use buttons to control
+        </p>
+      </div>
+      
       <div className="flex justify-center mb-4">
         <button
           className="control-btn w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md focus:outline-none active:shadow-inner disabled:opacity-50"

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,10 +63,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				snake: {
-					body: '#1A1F2C',
-					food: '#0EA5E9',
+					head: '#00796B',
+					body: '#26A69A',
+					food: '#FF5722',
 					grid: 'rgba(226, 232, 240, 0.1)',
-					background: '#FAFAFA'
+					background: '#FAFAFA',
+					border: '#455A64'
 				}
 			},
 			borderRadius: {

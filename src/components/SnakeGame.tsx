@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import GameControls from "./GameControls";
 import ScoreBoard from "./ScoreBoard";
@@ -254,10 +253,11 @@ const SnakeGame: React.FC = () => {
       <ScoreBoard score={score} highScore={highScore} />
       
       <div 
-        className="game-board bg-snake-background border border-gray-200"
+        className="game-board bg-snake-background"
         style={{
           gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,
           gridTemplateRows: `repeat(${gridSize}, ${cellSize}px)`,
+          borderColor: 'var(--snake-border-color, #455A64)'
         }}
       >
         {/* Grid background */}
@@ -266,7 +266,8 @@ const SnakeGame: React.FC = () => {
           const y = Math.floor(index / gridSize);
           
           // Check if this cell is part of the snake
-          const isSnake = snake.some(segment => segment.x === x && segment.y === y);
+          const isSnakeHead = snake.length > 0 && snake[0].x === x && snake[0].y === y;
+          const isSnakeBody = !isSnakeHead && snake.some((segment, idx) => idx > 0 && segment.x === x && segment.y === y);
           
           // Check if this cell is the food
           const isFood = food.x === x && food.y === y;
@@ -275,11 +276,13 @@ const SnakeGame: React.FC = () => {
             <div
               key={`${x}-${y}`}
               className={`snake-cell ${
-                isSnake 
-                  ? "bg-snake-body rounded-sm" 
-                  : isFood 
-                    ? "bg-snake-food rounded-full snake-food" 
-                    : ""
+                isSnakeHead 
+                  ? "bg-snake-head snake-head" 
+                  : isSnakeBody 
+                    ? "bg-snake-body snake-body" 
+                    : isFood 
+                      ? "bg-snake-food snake-food" 
+                      : ""
               }`}
               style={{
                 width: `${cellSize}px`,

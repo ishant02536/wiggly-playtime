@@ -71,7 +71,7 @@ export default {
 					'food-dark': '#FF7043',
 					grid: 'rgba(226, 232, 240, 0.1)',
 					background: '#FAFAFA',
-					'background-dark': '#1A1F2C',
+					'background-dark': '#000000',
 					border: '#455A64',
 					'border-dark': '#263238'
 				}

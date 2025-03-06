@@ -6,6 +6,10 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 py-10">
       <div className="w-full max-w-3xl mx-auto">
+        <div className="text-center mb-4">
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Developed By Ishant</p>
+        </div>
+        
         <div className="text-center mb-8">
           <div className="inline-block px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full text-xs font-medium mb-2 animate-pulse-gentle">
             CLASSIC GAME
